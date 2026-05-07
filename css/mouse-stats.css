@@ -1,0 +1,54 @@
+.mouse-stats {
+  --mouse-stats-edge-gap: var(--ui-edge-gap, clamp(1rem, 3.4vmin, 1.875rem));
+  --mouse-stats-width: min(42vw, calc(var(--board-size, min(88vmin, 32.5rem)) * 0.615));
+
+  position: fixed;
+  left: var(--mouse-stats-edge-gap);
+  bottom: var(--mouse-stats-edge-gap);
+  width: var(--mouse-stats-width);
+  aspect-ratio: 1828 / 860;
+  padding: 0;
+  border: none;
+  background-image: url('../assets/ui/mouserate-panel.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  background-color: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+  z-index: 10;
+  display: block;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.mouse-stats strong {
+  position: absolute;
+  right: 8.5%;
+  width: 22%;
+  color: #f6efb2;
+  font-size: clamp(0.95rem, 2.7vw, 1.35rem);
+  font-size: 6.75cqw;
+  font-weight: 600;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+  transform: translateY(-50%);
+}
+
+#mouseSpeed {
+  top: 26%;
+}
+
+#mouseDistance {
+  top: 43%;
+}
+
+#mouseTurns {
+  top: 62%;
+}
+
+#mouseInteractions {
+  top: 80%;
+}

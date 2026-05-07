@@ -1,0 +1,340 @@
+:root {
+  color-scheme: dark;
+  font-family: "IBM Plex Mono", "Courier New", Courier, monospace;
+  color: #e5e7eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  --page-background-image: url('../assets/puzzles/blackHairMale/background/background.png');
+  --ui-edge-gap: clamp(1rem, 3.4vmin, 1.875rem);
+  --bottom-ui-height: clamp(4.35rem, 9.5vmin, 5.8rem);
+  --restart-button-width: clamp(10.5rem, 28vmin, 15rem);
+  --scene-aspect-ratio: 1.234;
+  --puzzle-width: 35%;
+  --puzzle-left: 50%;
+  --puzzle-top: 52%;
+  --puzzle-translate-x: -50%;
+  --puzzle-translate-y: -50%;
+  --page-background-scale: 0.8;
+  --puzzle-grid-background: rgba(12, 14, 18, 0.95);
+  --puzzle-grid-border: rgba(255,255,255,0.08);
+  --puzzle-grid-inset: rgba(255,255,255,0.04);
+  --tile-border-color: rgba(255,255,255,0.08);
+  --empty-tile-border-color: rgba(255,255,255,0.04);
+  --empty-tile-filter: brightness(0.7) contrast(0.85);
+
+  background-image: radial-gradient(circle at top, rgba(110, 116, 130, 0.08), transparent 30%),
+                    linear-gradient(180deg, rgba(12, 14, 18, 1), rgba(2, 4, 6, 1));
+  background-position: center, center;
+  background-size: auto, auto;
+  background-repeat: no-repeat, no-repeat;
+  background-blend-mode: normal, normal;
+  color: #d6d6d6;
+  overflow: hidden;
+}
+
+body[data-puzzle-theme="light"] {
+  --puzzle-grid-background: rgba(246, 247, 242, 0.96);
+  --puzzle-grid-border: rgba(20, 20, 24, 0.16);
+  --puzzle-grid-inset: rgba(20, 20, 24, 0.08);
+  --tile-border-color: rgba(20, 20, 24, 0.14);
+  --empty-tile-border-color: rgba(20, 20, 24, 0.1);
+  --empty-tile-filter: brightness(1.04) contrast(0.96);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 0.2vmin, transparent 0.2vmin);
+  background-size: 5.77vmin 5.77vmin;
+  opacity: 0.32;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.28) 100%);
+}
+
+.page-background-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  transform: scale(var(--page-background-scale));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-shell {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: max(100vw, calc(100vh * var(--scene-aspect-ratio)));
+  aspect-ratio: var(--scene-aspect-ratio);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.puzzle-shell {
+  position: absolute;
+  left: var(--puzzle-left);
+  top: var(--puzzle-top);
+  width: var(--puzzle-width);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  transform: translate(var(--puzzle-translate-x), var(--puzzle-translate-y));
+  z-index: 1;
+}
+
+.puzzle-grid {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0.77%;
+  padding: 0.77%;
+  background: var(--puzzle-grid-background);
+  border: 0.2vmin solid var(--puzzle-grid-border);
+  box-shadow: inset 0 0 0 0.2vmin var(--puzzle-grid-inset), 0 3.85vmin 13.46vmin rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.tile {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  background-image: var(--tile-image, linear-gradient(135deg, rgba(246,239,178,0.28), rgba(18,22,30,0.92)));
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: 0.2vmin solid var(--tile-border-color);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
+}
+
+.tile-image {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.11) 0%, transparent 22%),
+                    repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0, rgba(255,255,255,0.02) 0.2vmin, transparent 0.2vmin, transparent 0.77vmin);
+  opacity: 0;
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+
+.tile.noise::after {
+  opacity: var(--noiseOpacity, 0);
+}
+
+.tile.empty {
+  background: transparent;
+  border-color: var(--empty-tile-border-color);
+  cursor: default;
+  filter: var(--empty-tile-filter);
+  opacity: 0.8;
+}
+
+.trail-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.control-row {
+  position: fixed;
+  left: 50%;
+  bottom: var(--ui-edge-gap);
+  width: var(--restart-button-width);
+  display: flex;
+  justify-content: center;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.action-button {
+  width: 100%;
+  aspect-ratio: 240 / 81;
+  padding: 0;
+  border: none;
+  border-radius: 8.75% / 25.93%;
+  background-image: url('../assets/ui/restart-button.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-color: transparent;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  text-indent: -999vmin;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.action-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-0.2vmin);
+}
+
+.action-button:active {
+  transform: translateY(0);
+}
+
+.completion-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 4.62%;
+  background: rgba(2, 4, 6, 0.72);
+  z-index: 3;
+}
+
+.completion-overlay.hidden {
+  display: none;
+}
+
+.overlay-copy {
+  max-width: 61.54%;
+  color: #eef1f6;
+  border: 0.2vmin solid rgba(255,255,255,0.1);
+  padding: 3.46% 4.23%;
+  background: rgba(12, 14, 18, 0.88);
+  box-shadow: 0 0 0 0.2vmin rgba(255,255,255,0.03);
+}
+
+.overlay-copy p {
+  margin: 0 0 1.92vmin;
+  line-height: 1.5;
+}
+
+.overlay-copy .overlay-note {
+  font-size: 0.82rem;
+  color: #9aa0ab;
+}
+
+.character-select {
+  position: fixed;
+  right: var(--ui-edge-gap);
+  bottom: var(--ui-edge-gap);
+  z-index: 10;
+  display: flex;
+  gap: clamp(0.45rem, 1.2vmin, 0.75rem);
+  align-items: flex-end;
+}
+
+.character-option {
+  width: var(--bottom-ui-height);
+  --option-scale: 0.94;
+  --option-hover-scale: calc(var(--option-scale) * 1.05);
+  --option-active-scale: calc(var(--option-scale) * 1.1);
+  --option-press-scale: calc(var(--option-scale) * 1.04);
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  display: block;
+  filter: brightness(0.72) saturate(0.78);
+  opacity: 0.74;
+  transform-origin: bottom center;
+  transform: scale(var(--option-scale));
+  transition: transform 160ms ease, filter 160ms ease, opacity 160ms ease;
+}
+
+.character-option img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: bottom center;
+  pointer-events: none;
+}
+
+.character-option[data-puzzle-set="blackHairMale"] {
+  --option-scale: 1.078;
+  position: relative;
+  top: calc(0.22vmin + var(--bottom-ui-height) * 0.1);
+}
+
+.character-option:hover {
+  filter: brightness(0.95) saturate(0.95);
+  opacity: 0.92;
+  transform: scale(var(--option-hover-scale));
+}
+
+.character-option[data-puzzle-set="blondeWoman"] {
+  --option-scale: 1;
+}
+
+.character-option.active {
+  filter: brightness(1.12) saturate(1.08);
+  opacity: 1;
+  transform: scale(var(--option-active-scale));
+}
+
+.character-option:active {
+  transform: scale(var(--option-press-scale));
+}
+
+@media (max-width: 640px) {
+  body {
+    --ui-edge-gap: 1rem;
+    --bottom-ui-height: clamp(3.25rem, 12vw, 4.4rem);
+    --restart-button-width: clamp(8.5rem, 36vw, 11.5rem);
+    --puzzle-width: 28%;
+  }
+
+  .character-select {
+    right: var(--ui-edge-gap);
+    bottom: var(--ui-edge-gap);
+  }
+
+  .control-row {
+    bottom: var(--ui-edge-gap);
+  }
+}
+
+@media (max-width: 520px) {
+  .control-row {
+    bottom: calc(var(--ui-edge-gap) + var(--bottom-ui-height) + 0.6rem);
+  }
+}

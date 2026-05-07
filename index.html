@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한산</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/mouse-stats.css">
+</head>
+<body data-puzzle-theme="dark" data-puzzle-set="blackHairMale">
+  <aside class="mouse-stats" aria-label="Mouse statistics">
+    <strong id="mouseSpeed">0.00</strong>
+    <strong id="mouseDistance">0</strong>
+    <strong id="mouseTurns">0</strong>
+    <strong id="mouseInteractions">0</strong>
+  </aside>
+
+  <div class="page-shell">
+    <img id="pageBackgroundImage" class="page-background-image" src="assets/puzzles/blackHairMale/background/background.png" alt="">
+    <div class="puzzle-shell">
+      <div id="puzzle" class="puzzle-grid"></div>
+      <div id="completionOverlay" class="completion-overlay hidden">
+        <div class="overlay-copy">
+          <p>Verification complete. Behavioral image generated.</p>
+          <p class="overlay-note">This image is not the original face. It is reconstructed from your behavior.</p>
+        </div>
+      </div>
+    </div>
+    <div class="control-row">
+      <button id="restartButton" class="action-button" type="button" aria-label="Restart">Restart</button>
+    </div>
+  </div>
+
+  <div class="character-select" aria-label="Puzzle character">
+    <button class="character-option active" type="button" data-puzzle-set="blackHairMale" aria-label="남성 선택" aria-pressed="true">
+      <img src="assets/ui/characterselect-male.png" alt="">
+    </button>
+    <button class="character-option" type="button" data-puzzle-set="blondeWoman" aria-label="여성 선택" aria-pressed="false">
+      <img src="assets/ui/characterselect-female.png" alt="">
+    </button>
+  </div>
+
+  <script src="js/mouse-stats.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
