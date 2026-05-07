@@ -6,6 +6,14 @@ const PIECE_COUNT = TOTAL_TILES - 1;
 const DEFAULT_SET_ID = 'blackHairMale';
 const PLACEHOLDER_TILE_IMAGE = 'linear-gradient(135deg, rgba(246,239,178,0.28), rgba(18,22,30,0.92))';
 const PLACEHOLDER_BACKGROUND_IMAGE = 'linear-gradient(180deg, rgba(12,14,18,1), rgba(2,4,6,1))';
+const RESTART_IMAGE_WIDTH = 280;
+const RESTART_IMAGE_HEIGHT = 132;
+const RESTART_IMAGE_HIT_AREA = {
+  left: 34 / RESTART_IMAGE_WIDTH,
+  top: 24 / RESTART_IMAGE_HEIGHT,
+  right: 258 / RESTART_IMAGE_WIDTH,
+  bottom: 123 / RESTART_IMAGE_HEIGHT,
+};
 
 const blackHairMalePieces = Array.from(
   { length: PIECE_COUNT },
@@ -40,7 +48,7 @@ const puzzleElement = document.getElementById('puzzle');
 const overlay = document.getElementById('completionOverlay');
 const restartButton = document.getElementById('restartButton');
 const pageBackgroundImage = document.getElementById('pageBackgroundImage');
-const characterOptionButtons = Array.from(document.querySelectorAll('[data-puzzle-set]'));
+const characterOptionButtons = Array.from(document.querySelectorAll('.character-option[data-puzzle-set]'));
 
 
 let tileOrder = Array.from({ length: TOTAL_TILES }, (_, index) => index);
@@ -127,6 +135,61 @@ function setImageWithFallback(image, paths) {
 
   image.onerror = useNextImage;
   useNextImage();
+}
+
+function isRestartButtonImagePoint(event) {
+  if (!restartButton) {
+    return false;
+  }
+
+  const rect = restartButton.getBoundingClientRect();
+  if (!rect.width || !rect.height) {
+    return false;
+  }
+
+  const imageRatio = RESTART_IMAGE_WIDTH / RESTART_IMAGE_HEIGHT;
+  const buttonRatio = rect.width / rect.height;
+  let renderedWidth = rect.width;
+  let renderedHeight = rect.height;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  if (buttonRatio > imageRatio) {
+    renderedWidth = rect.height * imageRatio;
+    offsetX = (rect.width - renderedWidth) / 2;
+  } else {
+    renderedHeight = rect.width / imageRatio;
+    offsetY = (rect.height - renderedHeight) / 2;
+  }
+
+  const localX = event.clientX - rect.left - offsetX;
+  const localY = event.clientY - rect.top - offsetY;
+  const hitLeft = renderedWidth * RESTART_IMAGE_HIT_AREA.left;
+  const hitTop = renderedHeight * RESTART_IMAGE_HIT_AREA.top;
+  const hitRight = renderedWidth * RESTART_IMAGE_HIT_AREA.right;
+  const hitBottom = renderedHeight * RESTART_IMAGE_HIT_AREA.bottom;
+
+  return localX >= hitLeft && localX <= hitRight && localY >= hitTop && localY <= hitBottom;
+}
+
+function handleRestartButtonClick(event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (!isRestartButtonImagePoint(event)) {
+    return;
+  }
+
+  resetPuzzle();
+}
+
+function handleRestartButtonPointerDown(event) {
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+function preventPageSelection(event) {
+  event.preventDefault();
 }
 
 function resolveSetAssets(setId) {
@@ -556,6 +619,9 @@ function setupListeners() {
   window.addEventListener('pointerdown', recordInteraction);
   puzzleElement.addEventListener('pointermove', handlePointerMove);
   window.addEventListener('pointerup', handlePointerUp);
+  document.addEventListener('selectstart', preventPageSelection);
+  document.addEventListener('dragstart', preventPageSelection);
+  document.addEventListener('dblclick', preventPageSelection);
 
   characterOptionButtons.forEach((button) => {
     button.addEventListener('click', () => {
@@ -575,7 +641,8 @@ async function initialize() {
   animationFrameId = requestAnimationFrame(updateFrame);
 
   if (restartButton) {
-    restartButton.addEventListener('click', resetPuzzle);
+    restartButton.addEventListener('pointerdown', handleRestartButtonPointerDown);
+    restartButton.addEventListener('click', handleRestartButtonClick);
   }
 }
 

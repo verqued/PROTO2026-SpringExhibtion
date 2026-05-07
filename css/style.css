@@ -11,6 +11,9 @@
 html, body {
   margin: 0;
   min-height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 body {
@@ -40,6 +43,13 @@ body {
   background-blend-mode: normal, normal;
   color: #d6d6d6;
   overflow: hidden;
+  touch-action: none;
+}
+
+button,
+img {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 body[data-puzzle-theme="light"] {
@@ -187,7 +197,7 @@ body::after {
   position: fixed;
   left: 50%;
   bottom: var(--ui-edge-gap);
-  width: var(--restart-button-width);
+  width: calc(var(--restart-button-width) * 0.716);
   display: flex;
   justify-content: center;
   transform: translateX(-50%);
@@ -196,7 +206,7 @@ body::after {
 
 .action-button {
   width: 100%;
-  aspect-ratio: 240 / 81;
+  aspect-ratio: 280 / 132;
   padding: 0;
   border: none;
   border-radius: 8.75% / 25.93%;
@@ -208,7 +218,7 @@ body::after {
   color: transparent;
   font-size: 0;
   line-height: 0;
-  text-indent: -999vmin;
+  overflow: hidden;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
