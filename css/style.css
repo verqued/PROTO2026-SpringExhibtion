@@ -18,7 +18,7 @@ body {
   --ui-edge-gap: clamp(1rem, 3.4vmin, 1.875rem);
   --bottom-ui-height: clamp(4.35rem, 9.5vmin, 5.8rem);
   --restart-button-width: clamp(10.5rem, 28vmin, 15rem);
-  --scene-aspect-ratio: 1.234;
+  --scene-aspect-ratio: 1.471;
   --puzzle-width: 35%;
   --puzzle-left: 50%;
   --puzzle-top: 52%;
@@ -49,6 +49,14 @@ body[data-puzzle-theme="light"] {
   --tile-border-color: rgba(20, 20, 24, 0.14);
   --empty-tile-border-color: rgba(20, 20, 24, 0.1);
   --empty-tile-filter: brightness(1.04) contrast(0.96);
+}
+
+body[data-puzzle-set="blackHairMale"] {
+  --scene-aspect-ratio: 1.471;
+}
+
+body[data-puzzle-set="blondeWoman"] {
+  --scene-aspect-ratio: 1.234;
 }
 
 body::before {
