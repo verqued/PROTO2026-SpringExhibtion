@@ -63,6 +63,7 @@ body[data-puzzle-theme="light"] {
 
 body[data-puzzle-set="blackHairMale"] {
   --scene-aspect-ratio: 1.471;
+  --page-background-scale: 0.95;
 }
 
 body[data-puzzle-set="blondeWoman"] {
