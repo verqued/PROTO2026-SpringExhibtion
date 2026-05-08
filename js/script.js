@@ -8,6 +8,9 @@ const PLACEHOLDER_TILE_IMAGE = 'linear-gradient(135deg, rgba(246,239,178,0.28), 
 const PLACEHOLDER_BACKGROUND_IMAGE = 'linear-gradient(180deg, rgba(12,14,18,1), rgba(2,4,6,1))';
 const RESTART_IMAGE_WIDTH = 280;
 const RESTART_IMAGE_HEIGHT = 132;
+const HOVER_DARKNESS_RATE = 0.00008;
+const SLIDE_BRIGHTNESS_LOSS = 0.05;
+const MAX_SLIDE_BRIGHTNESS_LOSS = 0.4;
 const RESTART_IMAGE_HIT_AREA = {
   left: 34 / RESTART_IMAGE_WIDTH,
   top: 24 / RESTART_IMAGE_HEIGHT,
@@ -312,7 +315,7 @@ function updateHoverState(tileId, timestamp) {
   if (state.hoverLastTimestamp === null) return;
   const delta = timestamp - state.hoverLastTimestamp;
   state.hoverTime += delta;
-  state.darkness += delta * 0.0001;
+  state.darkness += delta * HOVER_DARKNESS_RATE;
   state.hoverLastTimestamp = timestamp;
 }
 
@@ -501,9 +504,10 @@ function updateTileVisuals(timestamp) {
     }
 
     const hoverInfluence = state.darkness * 0.64;
+    const slideInfluence = Math.min(MAX_SLIDE_BRIGHTNESS_LOSS, state.interactionCount * SLIDE_BRIGHTNESS_LOSS);
     const noiseInfluence = state.noiseLevel * 0.8;
     const distortionInfluence = Math.min(1, state.distortionLevel);
-    const brightness = Math.max(0, 1 - hoverInfluence - state.noiseLevel * 0.12);
+    const brightness = Math.max(0, 1 - hoverInfluence - slideInfluence);
     const contrast = 1 + hoverInfluence * 0.12;
     const boxInfluence = 0.18;
 
